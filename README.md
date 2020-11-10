@@ -1,2 +1,3 @@
-# java_rest_api_testing_seed
-Java Rest Assured Cucumber Automation Testing
+# Automation Seed Framework with Java + Serenity RestAssured + Cucumber
+
+mvn clean verify serenity:aggregate
