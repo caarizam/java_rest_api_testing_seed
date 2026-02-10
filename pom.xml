@@ -7,8 +7,16 @@
     <groupId>org.aut</groupId>
     <artifactId>java_rest_api_testing_seed</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <properties>
+        <java.version>11</java.version>
+    </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>1.0.2</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/junit/junit -->
         <dependency>
             <groupId>junit</groupId>
