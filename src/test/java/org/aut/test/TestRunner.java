@@ -1,6 +1,6 @@
 package org.aut.test;
 
-import cucumber.api.CucumberOptions;
+import io.cucumber.junit.CucumberOptions;
 import net.serenitybdd.cucumber.CucumberWithSerenity;
 import org.junit.runner.RunWith;
 
@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
                 "html:target/cucumber-html"
         },
             features = {"src/test/resources/features/"},
-        glue = {"classpath:org.aut.steps.definition"},
-        tags = {"@e2e"})
+        glue = {"org.aut.steps.definition"},
+        tags = "@e2e")
 public class TestRunner {
 }

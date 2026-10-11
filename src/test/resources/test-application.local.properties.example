@@ -1,0 +1,3 @@
+# Copy to test-application.local.properties (git-ignored) and fill in the values.
+# Environment variables take precedence (api-key -> API_KEY).
+api-key=change-me

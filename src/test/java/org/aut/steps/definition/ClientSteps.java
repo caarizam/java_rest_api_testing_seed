@@ -2,19 +2,19 @@ package org.aut.steps.definition;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import cucumber.api.DataTable;
-import cucumber.api.PendingException;
-import cucumber.api.java.en.And;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 import io.restassured.response.Response;
-import net.thucydides.core.annotations.Steps;
+import net.serenitybdd.annotations.Steps;
 import org.aut.common.Constants;
 import org.aut.dto.ClientRegistrationDto;
 import org.aut.helpers.PropertiesReaderHelper;
 import org.junit.Assert;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ClientSteps extends BaseSteps{
 
@@ -28,7 +28,9 @@ public class ClientSteps extends BaseSteps{
 
     @Given("^A client asks for registration$")
     public void aClientAsksForRegistration(DataTable table) {
-        List<ClientRegistrationDto> clientRegistrationList = table.asList(ClientRegistrationDto.class);
+        List<ClientRegistrationDto> clientRegistrationList = table.asMaps().stream()
+                .map(row -> new ObjectMapper().convertValue(row, ClientRegistrationDto.class))
+                .collect(Collectors.toList());
         String url = getBaseUrl();
         String addUser = this.propertiesReaderHelper.getProperty("add-user");
         String payload = commonSteps.getJsonFromClass(clientRegistrationList.get(0));

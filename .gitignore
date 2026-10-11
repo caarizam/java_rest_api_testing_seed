@@ -1,3 +1,43 @@
+# Build output
+target/
+out/
+build/
+
+# Serenity / Cucumber reports
+serenity-reports/
+.serenity/
+serenity.properties.local
+cucumber-reports/
+*.log
+
+# IDE - IntelliJ
 .idea/
 *.iml
-target/
+*.ipr
+*.iws
+
+# IDE - Eclipse / NetBeans / VS Code
+.classpath
+.project
+.settings/
+.factorypath
+nbproject/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Maven
+dependency-reduced-pom.xml
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+release.properties
+
+# Local overrides / secrets
+*.local.properties
+.env
+
+src/test/resources/get_openapijson.sh
+src/test/resources/openapi.json
