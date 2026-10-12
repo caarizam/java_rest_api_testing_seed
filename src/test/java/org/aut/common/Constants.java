@@ -17,19 +17,37 @@ public class Constants {
         return instance;
     }
 
+    final String ACCESS_TOKEN = "access_token";
+    final String REFRESH_TOKEN = "refresh_token";
+    final String TYPE_TOKEN = "token_type";
     final String LAST_TOKEN = "last_token";
-    private Map<String, String> storedTokens = new HashMap<String, String>();
 
-    public String getStoredAccessToken(String client){
+    public String getACCESS_TOKEN() {
+        return ACCESS_TOKEN;
+    }
+
+    public String getREFRESH_TOKEN() {
+        return REFRESH_TOKEN;
+    }
+
+    public String getTYPE_TOKEN() {
+        return TYPE_TOKEN;
+    }
+
+    private Map<String, AccessToken> storedTokens = new HashMap<String, AccessToken>();
+
+    public AccessToken getStoredAccessToken(String client){
         return storedTokens.get(client);
     }
 
-    public String getLastStoredAccessToken(){
+    public AccessToken getLastStoredAccessToken(){
         return storedTokens.get(LAST_TOKEN);
     }
 
-    public void addAccessToken(String client, String token){
-        storedTokens.put(client, token);
-        storedTokens.put(LAST_TOKEN, token);
+
+    public void addAccessToken(String client, String token, String refresh, String type){
+        AccessToken accessToken = new AccessToken(token, refresh, type);
+        storedTokens.put(client, accessToken);
+        storedTokens.put(LAST_TOKEN, accessToken);
     }
 }

@@ -8,8 +8,8 @@ A base project for BDD-style REST API testing. Scenarios are written in Gherkin 
 |------|---------|
 | Java | 21 |
 | Serenity BDD (core, junit, cucumber, rest-assured) | 5.3.11 |
-| Cucumber (via Serenity) | 7.x |
-| JUnit | 4.13.2 |
+| Cucumber (via Serenity, JUnit Platform engine) | 7.34.2 |
+| JUnit (Jupiter + Platform Suite) | 6.1.3 |
 | Jackson Databind | 2.22.3 |
 | Datafaker | 2.7.0 |
 | Maven | 3.9+ |
@@ -53,7 +53,7 @@ mvn clean verify
 mvn clean verify -Dcucumber.filter.tags="@registration"
 ```
 
-The tests run in the `integration-test` phase through `maven-failsafe-plugin` (`TestRunner`). The Surefire plugin is disabled. The Serenity report is aggregated automatically after the tests, and the entry point is `target/site/serenity/index.html`.
+The tests run in the `integration-test` phase through `maven-failsafe-plugin` (`TestRunner`, a JUnit Platform `@Suite` that runs the Cucumber engine). The Surefire plugin is disabled. The Serenity report is aggregated automatically after the tests, and the entry point is `target/site/serenity/index.html`.
 
 ## Adding a new test
 

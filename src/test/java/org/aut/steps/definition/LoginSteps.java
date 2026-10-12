@@ -10,15 +10,14 @@ import io.restassured.response.Response;
 import net.serenitybdd.annotations.Steps;
 import org.aut.common.Constants;
 import org.aut.dto.ClientRegistrationDto;
-import org.aut.helpers.PropertiesReaderHelper;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ClientSteps extends BaseSteps{
+public class LoginSteps extends BaseSteps{
 
-    public ClientSteps(){
+    public LoginSteps(){
     }
 
     @Steps
@@ -37,9 +36,9 @@ public class ClientSteps extends BaseSteps{
         commonSteps.resetHeaders();
         commonSteps.addHeader("Content-Type", "application/json");
         this.response = commonSteps.postClientRegistration(url, addUser, payload);
-        Assert.assertEquals("The status code should be 201, but was " + this.response.statusCode(), 201, this.response.statusCode());
-        Assert.assertEquals("The status should be Ok, but was " + this.response.path("status"), "ok", this.response.path("status"));
-        Assert.assertEquals("The message should be Created, but was " + this.response.path("message"), "created", this.response.path("message"));
+        Assertions.assertEquals(201, this.response.statusCode(), "The status code should be 201, but was " + this.response.statusCode());
+        Assertions.assertEquals("ok", this.response.path("status"), "The status should be Ok, but was " + this.response.path("status"));
+        Assertions.assertEquals("created", this.response.path("message"), "The message should be Created, but was " + this.response.path("message"));
 
     }
 
@@ -57,8 +56,8 @@ public class ClientSteps extends BaseSteps{
         String auth = propertiesReaderHelper.getProperty("auth");
 
         this.response = commonSteps.postClientLogin(url, auth, bodyPayload);
-        Assert.assertEquals("The status code should be 200, but was " + this.response.statusCode(), 200, this.response.statusCode());
-        Assert.assertNotNull("The access_token should not be empty", this.response.path("access_token"));
+        Assertions.assertEquals(200, this.response.statusCode(), "The status code should be 200, but was " + this.response.statusCode());
+        Assertions.assertNotNull(this.response.path("access_token"), "The access_token should not be empty");
     }
 
     @And("^The client should be able to delete his account$")
@@ -68,18 +67,18 @@ public class ClientSteps extends BaseSteps{
         commonSteps.addHeader("Authorization", "Bearer " + this.response.path("access_token").toString());
         commonSteps.addHeader("Content-Type", "application/json");
         this.response = commonSteps.deleteAccountUser(getBaseUrl(), deleteAccount);
-        Assert.assertEquals("The status code should be 200, but was " + this.response.statusCode(), 200, this.response.statusCode());
-        Assert.assertEquals("The status should be Ok, but was " + this.response.path("status"), "ok", this.response.path("status"));
-        Assert.assertEquals("The message should be The account has been deleted, but was " + this.response.path("message"), "the account has been deleted", this.response.path("message"));
+        Assertions.assertEquals(200, this.response.statusCode(), "The status code should be 200, but was " + this.response.statusCode());
+        Assertions.assertEquals("ok", this.response.path("status"), "The status should be Ok, but was " + this.response.path("status"));
+        Assertions.assertEquals("the account has been deleted", this.response.path("message"), "The message should be The account has been deleted, but was " + this.response.path("message"));
 
     }
 
-    @Given("^The client request for login with \"([^\"]*)\" and \"([^\"]*)\"$")
-    public void theClientRequestForLoginWithAnd(String email, String password) throws Throwable {
+    @Given("^The client is logged in \"([^\"]*)\" and \"([^\"]*)\"$")
+    public void theClientIsLoggedInAnd(String email, String password) throws Throwable {
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode loginPayload = mapper.createObjectNode();
-        loginPayload.put("email", email);
+        loginPayload.put("username", email);
         loginPayload.put("password", password);
 
         String bodyPayload = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(loginPayload);
@@ -92,10 +91,15 @@ public class ClientSteps extends BaseSteps{
 
         this.response = commonSteps.postClientLogin(url, auth, bodyPayload);
 
-        Constants.getInstance().addAccessToken(email, this.response.path("access_token").toString());
+        Constants.getInstance().addAccessToken(
+                email,
+                this.response.path(Constants.getInstance().getACCESS_TOKEN()).toString(),
+                this.response.path(Constants.getInstance().getREFRESH_TOKEN()).toString(),
+                this.response.path(Constants.getInstance().getTYPE_TOKEN()).toString()
+        );
 
-        Assert.assertEquals("The status code should be 200, but was " + this.response.statusCode(), 200, this.response.statusCode());
-        Assert.assertNotNull("The access_token should not be empty", this.response.path("access_token"));
+        Assertions.assertEquals(200, this.response.statusCode(), "The status code should be 200, but was " + this.response.statusCode());
+        Assertions.assertNotNull(this.response.path("access_token"), "The access_token should not be empty");
 
     }
 }

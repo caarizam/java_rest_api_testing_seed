@@ -5,7 +5,7 @@ import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 import net.serenitybdd.annotations.Steps;
 import org.aut.common.Constants;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 public class HealthSteps extends BaseSteps{
 
@@ -31,9 +31,9 @@ public class HealthSteps extends BaseSteps{
     @Then("^The check health service should be \"([^\"]*)\"$")
     public void theCheckHealthServiceShouldBe(String condition) throws Throwable {
 
-        Assert.assertEquals("The status code should be 200, but was " + this.response.statusCode(), 200, this.response.statusCode());
-        Assert.assertEquals("The type should be service, but was " + this.response.path("type"), "service", this.response.path("type"));
-        Assert.assertEquals("The status should be " + condition + ", but was " + this.response.path("status"), condition, this.response.path("status"));
+        Assertions.assertEquals(200, this.response.statusCode(), "The status code should be 200, but was " + this.response.statusCode());
+        Assertions.assertEquals("service", this.response.path("type"), "The type should be service, but was " + this.response.path("type"));
+        Assertions.assertEquals(condition, this.response.path("status"), "The status should be " + condition + ", but was " + this.response.path("status"));
 
     }
 }
