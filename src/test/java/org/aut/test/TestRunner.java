@@ -1,18 +1,24 @@
 package org.aut.test;
 
-import cucumber.api.CucumberOptions;
-import net.serenitybdd.cucumber.CucumberWithSerenity;
-import org.junit.runner.RunWith;
+import org.junit.platform.suite.api.ConfigurationParameter;
+import org.junit.platform.suite.api.IncludeEngines;
+import org.junit.platform.suite.api.SelectPackages;
+import org.junit.platform.suite.api.Suite;
 
-@RunWith(CucumberWithSerenity.class)
-@CucumberOptions(
-        plugin = {
-                "pretty",
-                "json:target/cucumber-json-report",
-                "html:target/cucumber-html"
-        },
-            features = {"src/test/resources/features/"},
-        glue = {"classpath:org.aut.steps.definition"},
-        tags = {"@e2e"})
+import static io.cucumber.junit.platform.engine.Constants.FILTER_TAGS_PROPERTY_NAME;
+import static io.cucumber.junit.platform.engine.Constants.GLUE_PROPERTY_NAME;
+import static io.cucumber.junit.platform.engine.Constants.PLUGIN_PROPERTY_NAME;
+
+@Suite
+@IncludeEngines("cucumber")
+@SelectPackages("features")
+@ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "org.aut.steps.definition")
+@ConfigurationParameter(key = FILTER_TAGS_PROPERTY_NAME, value = "@e2e")
+@ConfigurationParameter(
+        key = PLUGIN_PROPERTY_NAME,
+        value = "net.serenitybdd.cucumber.core.plugin.SerenityReporterParallel,"
+                + "pretty,"
+                + "json:target/cucumber-json-report,"
+                + "html:target/cucumber-html")
 public class TestRunner {
 }
