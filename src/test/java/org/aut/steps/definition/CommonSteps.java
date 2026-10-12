@@ -52,6 +52,14 @@ public class CommonSteps {
 
     }
 
+    public void setHeadersBasic() {
+
+        headersMap = new HashMap<String, Object>();
+        headersMap.put("Content-Type", "application/json");
+        headersMap.put(API_KEY_HEADER, this.apiKey);
+
+    }
+
     @Step
     public Response getRequest(String baseUrl, String endPoint){
         try{
@@ -102,6 +110,22 @@ public class CommonSteps {
             return response;
         }catch (Exception ex){
             LOGGER.error("Error on postRequest", ex);
+            return null;
+        }
+
+    }
+
+    @Step
+    public Response deleteRequest(String baseUrl, String endPoint){
+
+        try{
+            Response response = request().
+                    with().
+                    headers(this.headersMap).
+                    delete(baseUrl + endPoint);
+            return response;
+        }catch (Exception ex){
+            LOGGER.error("Error on deleteRequest", ex);
             return null;
         }
 

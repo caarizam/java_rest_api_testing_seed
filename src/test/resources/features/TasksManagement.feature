@@ -3,7 +3,7 @@ Feature: Client account management
 
   @tasks
   Scenario Outline: The client is able to register and create a task
-    Given The client is logged in "kamarinxs@gmail.com" and "123456789"
+    Given The user is registered
     When The user creates the task "<task_name>"
     Then The user can see the created task "<task_name>"
     And The user can delete the created task "<task_name>"
