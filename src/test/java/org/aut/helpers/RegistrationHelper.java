@@ -2,6 +2,9 @@ package org.aut.helpers;
 
 import net.datafaker.Faker;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,5 +30,27 @@ public class RegistrationHelper {
         registerMap.put("password", faker.regexify(PASSWORD_REGEX));
 
         return registerMap;
+    }
+
+    /**
+     * Generates the MD5 hash of a given text.
+     *
+     * @param text the text to hash
+     * @return the MD5 hash as a 32-character lowercase hexadecimal string
+     */
+    public String generateMd5(String text) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            byte[] hash = digest.digest(text.getBytes(StandardCharsets.UTF_8));
+
+            StringBuilder md5 = new StringBuilder();
+            for (byte b : hash) {
+                md5.append(String.format("%02x", b));
+            }
+
+            return md5.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("MD5 algorithm not available", e);
+        }
     }
 }

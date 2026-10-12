@@ -35,49 +35,51 @@ public class LoginSteps extends BaseSteps{
     @Given("^The user is registered$")
     public void aUserIsRegistered() throws JsonProcessingException {
 
-        Response loginResponse, registerResponse;
+        if (Constants.getInstance().isShouldICreateAUser()) {
 
-        RegistrationHelper registrationHelper = new RegistrationHelper();
-        ObjectMapper loginMapper = new ObjectMapper();
-        ObjectMapper registerMapper = new ObjectMapper();
-        ObjectNode loginNodePayload = loginMapper.createObjectNode();
-        ObjectNode registerNodePayload = registerMapper.createObjectNode();
+            Response loginResponse, registerResponse;
 
-        String baseUrl = getBaseUrl();
-        String authenticationEndpoint = propertiesReaderHelper.getProperty("auth");
-        String registrationEndpoint = propertiesReaderHelper.getProperty("users");
+            RegistrationHelper registrationHelper = new RegistrationHelper();
+            ObjectMapper loginMapper = new ObjectMapper();
+            ObjectMapper registerMapper = new ObjectMapper();
+            ObjectNode loginNodePayload = loginMapper.createObjectNode();
+            ObjectNode registerNodePayload = registerMapper.createObjectNode();
 
-        Map<String, String> registerMap = registrationHelper.getRegisterMap();
-        LOGGER.info("Registration user request {}", registerMap.get("email"));
+            String baseUrl = getBaseUrl();
+            String authenticationEndpoint = propertiesReaderHelper.getProperty("auth");
+            String registrationEndpoint = propertiesReaderHelper.getProperty("users");
 
-        // Login Payload
-        loginNodePayload.put("username", registerMap.get("email"));
-        loginNodePayload.put("password", registerMap.get("password"));
-        String loginPayload = loginMapper.writerWithDefaultPrettyPrinter().writeValueAsString(loginNodePayload);
+            Map<String, String> registerMap = registrationHelper.getRegisterMap();
+            LOGGER.info("Registration user request {}", registerMap.get("email"));
 
-        // Registration Payload
-        registerNodePayload.put("username", registerMap.get("email"));
-        registerNodePayload.put("password", registerMap.get("password"));
-        registerNodePayload.put("confirm", registerMap.get("password"));
-        String registerPayload = registerMapper.writerWithDefaultPrettyPrinter().writeValueAsString(registerNodePayload);
+            // Login Payload
+            loginNodePayload.put("username", registerMap.get("email"));
+            loginNodePayload.put("password", registerMap.get("password"));
+            String loginPayload = loginMapper.writerWithDefaultPrettyPrinter().writeValueAsString(loginNodePayload);
 
-        commonSteps.setHeadersBasic();
+            // Registration Payload
+            registerNodePayload.put("username", registerMap.get("email"));
+            registerNodePayload.put("password", registerMap.get("password"));
+            registerNodePayload.put("confirm", registerMap.get("password"));
+            String registerPayload = registerMapper.writerWithDefaultPrettyPrinter().writeValueAsString(registerNodePayload);
 
-        registerResponse = commonSteps.postRequest(baseUrl, registrationEndpoint, registerPayload);
-        Assertions.assertEquals(201, registerResponse.statusCode(), "The status code should be 201, but was " + registerResponse.statusCode());
+            commonSteps.setHeadersBasic();
 
-        loginResponse = commonSteps.postRequest(baseUrl, authenticationEndpoint, loginPayload);
+            registerResponse = commonSteps.postRequest(baseUrl, registrationEndpoint, registerPayload);
+            Assertions.assertEquals(201, registerResponse.statusCode(), "The status code should be 201, but was " + registerResponse.statusCode());
 
-        Assertions.assertEquals(200, loginResponse.statusCode(), "The status code should be 200, but was " + loginResponse.statusCode());
-        Assertions.assertNotNull(loginResponse.path("access_token"), "The access_token should not be empty");
+            loginResponse = commonSteps.postRequest(baseUrl, authenticationEndpoint, loginPayload);
 
-        Constants.getInstance().addAccessToken(
-                registerMap.get("email"),
-                loginResponse.path(Constants.getInstance().getACCESS_TOKEN()).toString(),
-                loginResponse.path(Constants.getInstance().getREFRESH_TOKEN()).toString(),
-                loginResponse.path(Constants.getInstance().getTYPE_TOKEN()).toString()
-        );
+            Assertions.assertEquals(200, loginResponse.statusCode(), "The status code should be 200, but was " + loginResponse.statusCode());
+            Assertions.assertNotNull(loginResponse.path("access_token"), "The access_token should not be empty");
 
+            Constants.getInstance().addAccessToken(
+                    registerMap.get("email"),
+                    loginResponse.path(Constants.getInstance().getACCESS_TOKEN()).toString(),
+                    loginResponse.path(Constants.getInstance().getREFRESH_TOKEN()).toString(),
+                    loginResponse.path(Constants.getInstance().getTYPE_TOKEN()).toString()
+            );
+        }
     }
 
     @Given("^A client asks for registration$")

@@ -1,6 +1,7 @@
 package org.aut.common;
 
 import org.aut.dto.AccessToken;
+import org.aut.helpers.RegistrationHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +24,34 @@ public class Constants {
     final String REFRESH_TOKEN = "refresh_token";
     final String TYPE_TOKEN = "token_type";
     final String LAST_TOKEN = "last_token";
+
+    public boolean singleRegister = false;
+    public boolean shouldICreateAUser = true;
+    public String md5Scenario = "";
+
+    public boolean isSingleRegister() {
+        return singleRegister;
+    }
+
+    public void setSingleRegister(boolean singleRegister) {
+        this.singleRegister = singleRegister;
+    }
+
+    public String getMd5Scenario() {
+        return md5Scenario;
+    }
+
+    public void setMd5Scenario(String md5Scenario) {
+        this.md5Scenario = md5Scenario;
+    }
+
+    public boolean isShouldICreateAUser() {
+        return shouldICreateAUser;
+    }
+
+    public void setShouldICreateAUser(boolean shouldICreateAUser) {
+        this.shouldICreateAUser = shouldICreateAUser;
+    }
 
     public String getACCESS_TOKEN() {
         return ACCESS_TOKEN;
@@ -57,9 +86,18 @@ public class Constants {
         storedTokens.put(LAST_TOKEN, accessToken);
     }
 
+    public void clearAccessTokens() {
+        this.storedTokens.clear();
+    }
+
     public boolean isAuthenticated() {
 
         return !this.storedTokens.isEmpty();
 
+    }
+
+    public String getMd5Feature(String featureUriName) {
+        RegistrationHelper registrationHelper = new RegistrationHelper();
+        return registrationHelper.generateMd5(featureUriName);
     }
 }
