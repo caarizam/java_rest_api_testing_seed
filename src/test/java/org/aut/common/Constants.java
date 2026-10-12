@@ -1,5 +1,7 @@
 package org.aut.common;
 
+import org.aut.dto.AccessToken;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,10 +46,20 @@ public class Constants {
         return storedTokens.get(LAST_TOKEN);
     }
 
+    public String getLastStoredAccessTokenValue(){
+        return storedTokens.get(LAST_TOKEN).getType() + " " + storedTokens.get(LAST_TOKEN).getAccessToken();
+    }
+
 
     public void addAccessToken(String client, String token, String refresh, String type){
         AccessToken accessToken = new AccessToken(token, refresh, type);
         storedTokens.put(client, accessToken);
         storedTokens.put(LAST_TOKEN, accessToken);
+    }
+
+    public boolean isAuthenticated() {
+
+        return !this.storedTokens.isEmpty();
+
     }
 }

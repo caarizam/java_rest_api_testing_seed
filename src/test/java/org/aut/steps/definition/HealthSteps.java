@@ -6,8 +6,12 @@ import io.restassured.response.Response;
 import net.serenitybdd.annotations.Steps;
 import org.aut.common.Constants;
 import org.junit.jupiter.api.Assertions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HealthSteps extends BaseSteps{
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HealthSteps.class);
 
     @Steps
     CommonSteps commonSteps;
@@ -17,7 +21,7 @@ public class HealthSteps extends BaseSteps{
     @When("^The client request for check health$")
     public void theClientRequestForCheckHealth() {
 
-        System.out.println("Last Stored Access Token: " + Constants.getInstance().getLastStoredAccessToken());
+        LOGGER.info("Access token stored: {}", Constants.getInstance().getLastStoredAccessToken() != null);
 
         String url = getBaseUrl();
         String healthCheck = propertiesReaderHelper.getProperty("health-check");

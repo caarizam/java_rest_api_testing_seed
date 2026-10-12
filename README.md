@@ -64,6 +64,10 @@ The tests run in the `integration-test` phase through `maven-failsafe-plugin` (`
 
 The `TestRunner` currently selects scenarios tagged `@e2e`.
 
+## Logging
+
+Logging uses SLF4J with Logback, configured in `src/test/resources/logback-test.xml`. Output goes to the console and to `target/logs/test-execution.log`. Our own code logs at `INFO`; set the `LOG_LEVEL` environment variable (for example `LOG_LEVEL=DEBUG`) for more detail. Passwords and tokens are never logged.
+
 ## API key and secrets
 
 The API key is sent in the `x-api-key` header on every request. It is resolved in this order:

@@ -1,4 +1,4 @@
-package org.aut.common;
+package org.aut.dto;
 
 public class AccessToken {
     private String accessToken;

@@ -8,7 +8,10 @@ import io.restassured.config.LogConfig;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import net.serenitybdd.rest.SerenityRest;
+import org.aut.common.Constants;
 import org.aut.helpers.PropertiesReaderHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import net.serenitybdd.annotations.Step;
 
 import java.util.HashMap;
@@ -16,6 +19,9 @@ import java.util.Set;
 import java.util.Map;
 
 public class CommonSteps {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommonSteps.class);
+    PropertiesReaderHelper propertiesReaderHelper;
 
     private static final String API_KEY_HEADER = "x-api-key";
 
@@ -25,7 +31,7 @@ public class CommonSteps {
                 LogConfig.logConfig().blacklistHeaders(Set.of(API_KEY_HEADER, "Authorization")));
     }
 
-    private final String apiKey = new PropertiesReaderHelper().getProperty("api-key");
+    private final String apiKey;
 
     Map<String, Object> headersMap;
     SerenityRest serenityRest;
@@ -33,6 +39,17 @@ public class CommonSteps {
     public CommonSteps(){
         headersMap = new HashMap<String, Object>();
         serenityRest = new SerenityRest();
+        propertiesReaderHelper = new PropertiesReaderHelper();
+        this.apiKey = this.propertiesReaderHelper.getProperty("api-key");
+    }
+
+    public void setHeadersCredentials() {
+
+        headersMap = new HashMap<String, Object>();
+        headersMap.put("Content-Type", "application/json");
+        headersMap.put(API_KEY_HEADER, this.apiKey);
+        headersMap.put("Authorization", Constants.getInstance().getLastStoredAccessTokenValue());
+
     }
 
     @Step
@@ -45,7 +62,7 @@ public class CommonSteps {
                     get(baseUrl + endPoint);
             return response;
         }catch (Exception ex){
-            System.out.println("Error on getRequest: " + ex.getMessage() + "\n" + ex.getCause());
+            LOGGER.error("Error on getRequest", ex);
             return null;
         }
     }
@@ -62,17 +79,17 @@ public class CommonSteps {
                     post(baseUrl + endPoint);
             return response;
         }catch (Exception ex){
-            System.out.println("Error on postClientRegistration: " + ex.getMessage() + "\n" + ex.getCause());
+            LOGGER.error("Error on postClientRegistration", ex);
             return null;
         }
 
     }
 
     @Step
-    public Response postClientLogin(String baseUrl, String endPoint, String body){
+    public Response postRequest(String baseUrl, String endpoint, String body){
 
-        System.out.println(endPoint);
-        System.out.println(body);
+        // the body carries the password, so only the endpoint is logged
+        LOGGER.info("POST request {}", endpoint);
 
         try{
             Response response = request().
@@ -80,11 +97,11 @@ public class CommonSteps {
                     headers(this.headersMap).
                     with().
                     body(body).
-                    post(baseUrl + endPoint);
-            System.out.println(response.getBody().prettyPrint());
+                    post(baseUrl + endpoint);
+            LOGGER.debug("POST Response: {}", response.getBody().asPrettyString());
             return response;
         }catch (Exception ex){
-            System.out.println("Error on postClientLogin: " + ex.getMessage() + "\n" + ex.getCause());
+            LOGGER.error("Error on postRequest", ex);
             return null;
         }
 
@@ -100,7 +117,7 @@ public class CommonSteps {
                     delete(baseUrl + endPoint);
             return response;
         }catch (Exception ex){
-            System.out.println("Error on deleteAccountUser: " + ex.getMessage() + "\n" + ex.getCause());
+            LOGGER.error("Error on deleteAccountUser", ex);
             return null;
         }
 
@@ -129,7 +146,7 @@ public class CommonSteps {
             String json = objw.writeValueAsString(obj);
             return json;
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            LOGGER.error("Could not serialize {} to JSON", obj.getClass().getSimpleName(), e);
             return "{}";
         }
 

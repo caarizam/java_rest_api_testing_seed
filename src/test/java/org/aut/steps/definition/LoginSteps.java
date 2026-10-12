@@ -55,7 +55,7 @@ public class LoginSteps extends BaseSteps{
         String url = getBaseUrl();
         String auth = propertiesReaderHelper.getProperty("auth");
 
-        this.response = commonSteps.postClientLogin(url, auth, bodyPayload);
+        this.response = commonSteps.postRequest(url, auth, bodyPayload);
         Assertions.assertEquals(200, this.response.statusCode(), "The status code should be 200, but was " + this.response.statusCode());
         Assertions.assertNotNull(this.response.path("access_token"), "The access_token should not be empty");
     }
@@ -89,7 +89,7 @@ public class LoginSteps extends BaseSteps{
         commonSteps.resetHeaders();
         commonSteps.addHeader("Content-Type", "application/json");
 
-        this.response = commonSteps.postClientLogin(url, auth, bodyPayload);
+        this.response = commonSteps.postRequest(url, auth, bodyPayload);
 
         Constants.getInstance().addAccessToken(
                 email,

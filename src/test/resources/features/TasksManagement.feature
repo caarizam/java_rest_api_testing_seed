@@ -1,11 +1,18 @@
 @e2e
 Feature: Client account management
 
-  @login_test
-  Scenario: Client login and health checkout
+  @tasks
+  Scenario Outline: The client is able to register and create a task
     Given The client is logged in "kamarinxs@gmail.com" and "123456789"
-    #When The client request for check health
-    #Then The check health service should be "up"
+    When The user creates the task "<task_name>"
+    Then The user can see the created task "<task_name>"
+    And The user can delete the created task "<task_name>"
+
+  Examples: Data to create tasks
+  | task_name|
+  |Test Task One|
+  |Test Task Two|
+  |Test Task Three|
 
 #  @registration
 #  Scenario Outline: Client registration

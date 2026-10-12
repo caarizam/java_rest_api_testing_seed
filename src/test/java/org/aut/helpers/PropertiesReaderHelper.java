@@ -1,5 +1,8 @@
 package org.aut.helpers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
@@ -12,6 +15,8 @@ import java.util.Properties;
  * 3. test-application.properties
  */
 public class PropertiesReaderHelper {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesReaderHelper.class);
 
     private static final String DEFAULT_FILE = "test-application.properties";
     private static final String LOCAL_FILE = "test-application.local.properties";
@@ -41,7 +46,7 @@ public class PropertiesReaderHelper {
                 properties.load(input);
             }
         }catch(IOException iex){
-            iex.printStackTrace();
+            LOGGER.error("Could not read {}", fileName, iex);
         }
         return properties;
     }
