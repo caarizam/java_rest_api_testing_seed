@@ -1,10 +1,9 @@
-@e2e
+@e2e @tasks_flow
 Feature: Task Management
 
   Background: The user is registered and logged in
     Given The user is registered
 
-  @tasks
   Scenario Outline: The client is able to register and create a task
     When The user creates the task "<task_name>"
     Then The user can see the created task "<task_name>"

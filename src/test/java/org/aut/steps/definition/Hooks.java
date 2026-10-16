@@ -71,7 +71,7 @@ public class Hooks {
 
             LOGGER.info("Feature starting: '{}' ({})", currentFeatureName, currentFeatureUri);
         } else {
-            if (singleRegister) {
+            if (singleRegister && Constants.getInstance().isAuthenticated()) {
                 Constants.getInstance().setShouldICreateAUser(false);
             }
         }
@@ -82,6 +82,8 @@ public class Hooks {
             LOGGER.info("Feature finished: '{}'", currentFeatureName);
             currentFeatureUri = null;
             currentFeatureName = null;
+            Constants.getInstance().clearAccessTokens();
+            Constants.getInstance().setShouldICreateAUser(true);
         }
     }
 
