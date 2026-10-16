@@ -32,6 +32,7 @@ public class CommonSteps {
     }
 
     private final String apiKey;
+    private boolean includeApiKey = true;
 
     Map<String, Object> headersMap;
     SerenityRest serenityRest;
@@ -44,7 +45,7 @@ public class CommonSteps {
     }
 
     public void setHeadersCredentials() {
-
+        this.includeApiKey = true;
         headersMap = new HashMap<String, Object>();
         headersMap.put("Content-Type", "application/json");
         headersMap.put(API_KEY_HEADER, this.apiKey);
@@ -53,11 +54,32 @@ public class CommonSteps {
     }
 
     public void setHeadersBasic() {
-
+        this.includeApiKey = true;
         headersMap = new HashMap<String, Object>();
         headersMap.put("Content-Type", "application/json");
         headersMap.put(API_KEY_HEADER, this.apiKey);
 
+    }
+
+    public void setHeadersWithoutApiKey() {
+        this.includeApiKey = false;
+        headersMap = new HashMap<String, Object>();
+        headersMap.put("Content-Type", "application/json");
+    }
+
+    public void setHeadersWithInvalidApiKey(String invalidApiKey) {
+        this.includeApiKey = false;
+        headersMap = new HashMap<String, Object>();
+        headersMap.put("Content-Type", "application/json");
+        headersMap.put(API_KEY_HEADER, invalidApiKey);
+    }
+
+    public void setHeadersWithoutBearerToken() {
+        this.includeApiKey = true;
+        headersMap = new HashMap<String, Object>();
+        headersMap.put("Content-Type", "application/json");
+        headersMap.put(API_KEY_HEADER, this.apiKey);
+        // Authorization header intentionally omitted
     }
 
     @Step
@@ -147,9 +169,27 @@ public class CommonSteps {
 
     }
 
+    @Step
+    public Response putRequest(String baseUrl, String endpoint, String body){
+        LOGGER.info("PUT request {}", endpoint);
+        try{
+            Response response = request().
+                    with().
+                    headers(this.headersMap).
+                    with().
+                    body(body).
+                    put(baseUrl + endpoint);
+            LOGGER.debug("PUT Response: {}", response.getBody().asPrettyString());
+            return response;
+        }catch (Exception ex){
+            LOGGER.error("Error on putRequest", ex);
+            return null;
+        }
+    }
+
     private RequestSpecification request(){
         RequestSpecification spec = SerenityRest.given();
-        if(!apiKey.isEmpty()){
+        if(includeApiKey && !apiKey.isEmpty()){
             spec = spec.header(API_KEY_HEADER, apiKey);
         }
         return spec;
@@ -157,6 +197,15 @@ public class CommonSteps {
 
     public void resetHeaders(){
         this.headersMap.clear();
+        this.includeApiKey = true;
+    }
+
+    public boolean isIncludeApiKey() {
+        return includeApiKey;
+    }
+
+    public void setIncludeApiKey(boolean includeApiKey) {
+        this.includeApiKey = includeApiKey;
     }
 
     public void addHeader(String key, String value){

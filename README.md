@@ -18,17 +18,19 @@ A base project for BDD-style REST API testing. Scenarios are written in Gherkin 
 ## Project structure
 
 ```
+.agentic/
+└── .context/          Project context and session state documentation
 src/test/java/org/aut
-├── common/            Constants: singleton that stores access tokens between steps
+├── common/            Constants: singleton that stores access tokens and session flags between steps
 ├── dto/               Payload and response classes (AccessToken, ClientRegistrationDto, Task)
 ├── helpers/           PropertiesReaderHelper, JsonReaderHelper, RegistrationHelper (fake registration data)
 ├── steps/definition/  Cucumber glue: BaseSteps, CommonSteps (HTTP calls), LoginSteps, TasksSteps, HealthSteps, Hooks
 └── test/              TestRunner (JUnit Platform @Suite that runs the Cucumber engine)
 src/test/resources
-├── features/                     Gherkin feature files (TasksManagement.feature)
-├── test-application.properties   Base URL, port and endpoint paths
-├── logback-test.xml              Logging configuration
-└── get_openapijson.sh            Downloads the API's OpenAPI spec (see below)
+├── features/          Gherkin feature files (TasksManagement.feature, NegativeTests.feature)
+├── test-application.properties   Base URL, port, endpoint paths, and execution flags
+├── logback-test.xml   Logging configuration
+└── get_openapijson.sh Downloads the API's OpenAPI spec (see below)
 ```
 
 ## Configuration
@@ -36,29 +38,45 @@ src/test/resources
 Edit `src/test/resources/test-application.properties` to point at the API under test:
 
 ```properties
+# single register per feature
+single_register=true
+
+# url-base
 url-base=http://127.0.0.1
 port=9000
+
+# authentication
 auth=/api/v1/auth/login
 auth_verify=/api/v1/auth/verify
 auth_refresh=/api/v1/auth/refresh
+
+# tasks
 tasks=/api/v1/tasks
+
+# add-user, registration
 users=/api/v1/users
+
+# health check
 health-check=/api/health/service
+
+# api key, set it in test-application.local.properties or the API_KEY environment variable
 api-key=
 ```
 
-Any property can be overridden by an upper-cased environment variable with `-` replaced by `_` (for example `PORT=9100`).
+- `single_register`: When set to `true`, the framework registers and authenticates a user only on the first scenario of each feature file, reusing the access token for subsequent scenarios in the same feature. Set to `false` if every scenario must register an independent new user.
+- Any property can be overridden by an upper-cased environment variable with `-` replaced by `_` (for example `PORT=9100` or `API_KEY=my_key`).
 
 ## Running the tests
 
 Requires JDK 21 or newer and Maven.
 
 ```bash
-# run the tests and generate the Serenity report
+# run all tests and generate the Serenity report
 mvn clean verify
 
 # run only certain scenarios by Cucumber tag
 mvn clean verify -Dcucumber.filter.tags="@tasks"
+mvn clean verify -Dcucumber.filter.tags="@negative"
 ```
 
 The tests run in the `integration-test` phase through `maven-failsafe-plugin` (`TestRunner`, a JUnit Platform `@Suite` that runs the Cucumber engine). The Surefire plugin is disabled. The Serenity report is aggregated automatically after the tests, and the entry point is `target/site/serenity/index.html`.
@@ -84,10 +102,10 @@ For fake registration data, `RegistrationHelper.getRegisterMap()` returns a map 
 |------|------|--------------|
 | `@BeforeAll` | once, before the first scenario | logs the target URL and warns if no API key is configured |
 | `@AfterAll` | once, after the last scenario | closes the last feature and clears the stored access tokens |
-| `@Before(order = 0)` | before each scenario | detects feature boundaries and logs `Feature starting` / `Feature finished` with the `Feature:` name |
+| `@Before(order = 0)` | before each scenario | detects feature boundaries, logs `Feature starting` / `Feature finished`, and manages `single_register` session creation |
 | `@BeforeStep` / `@AfterStep` | around each step | `DEBUG` logs, and a `WARN` when the scenario has failed |
 
-Cucumber has no `BeforeFeature`/`AfterFeature` hook, so features are detected from the scenario URI. This relies on static state and on sequential execution; it is not safe for parallel runs.
+Cucumber has no `BeforeFeature`/`AfterFeature` hook, so features are detected from the scenario URI. This relies on static state and on sequential execution; it is not safe for parallel runs. When `single_register=true`, `Hooks` sets `Constants.getInstance().setShouldICreateAUser(true)` only for the first scenario of a feature file, allowing subsequent scenarios to reuse the credentials.
 
 ## Logging
 

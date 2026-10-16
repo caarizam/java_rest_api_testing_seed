@@ -35,7 +35,8 @@ public class LoginSteps extends BaseSteps{
     @Given("^The user is registered$")
     public void aUserIsRegistered() throws JsonProcessingException {
 
-        if (Constants.getInstance().isShouldICreateAUser()) {
+        boolean singleRegister = Boolean.parseBoolean(propertiesReaderHelper.getProperty("single_register"));
+        if (!singleRegister || !Constants.getInstance().isAuthenticated()) {
 
             Response loginResponse, registerResponse;
 

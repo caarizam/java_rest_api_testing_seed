@@ -15,4 +15,3 @@ Feature: Task Management
   |Test Task One|
   |Test Task Two|
   |Test Task Three|
-    
